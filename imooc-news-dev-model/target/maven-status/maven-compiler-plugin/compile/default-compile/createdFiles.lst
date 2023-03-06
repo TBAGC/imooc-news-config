@@ -1,0 +1,17 @@
+com/imooc/pojo/Comments.class
+com/imooc/pojo/mo/FriendLinkMO.class
+com/imooc/pojo/vo/RegionRatioVO.class
+com/imooc/pojo/Fans.class
+com/imooc/pojo/AppUser.class
+com/imooc/pojo/vo/UserAccountInfoVO.class
+com/imooc/pojo/vo/CommentsVO.class
+com/imooc/pojo/Category.class
+com/imooc/pojo/vo/FansCountsVO.class
+com/imooc/pojo/bo/CommentReplyBO.class
+com/imooc/pojo/bo/RegistLoginBO.class
+com/imooc/pojo/bo/AdminLoginBO.class
+com/imooc/pojo/AdminUser.class
+com/imooc/pojo/bo/NewArticleBO.class
+com/imooc/pojo/bo/SaveCategoryBO.class
+com/imooc/pojo/vo/PublisherVO.class
+com/imooc/pojo/vo/IndexArticleVO.class

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="imooc-news-dev-common" />
+        <module name="imooc-news-dev-model" />
+        <module name="imooc-news-dev-service-admin" />
+        <module name="imooc-news-dev-service-api" />
+        <module name="imooc-news-dev-service-article" />
+        <module name="imooc-news-dev-service-article-html" />
+        <module name="imooc-news-dev-service-files" />
+        <module name="imooc-news-dev-service-user" />
+        <module name="mybatis-generator-database" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="imooc-news-dev-common" options="-parameters" />
+      <module name="imooc-news-dev-model" options="-parameters" />
+      <module name="imooc-news-dev-service-admin" options="-parameters" />
+      <module name="imooc-news-dev-service-api" options="-parameters" />
+      <module name="imooc-news-dev-service-article" options="-parameters" />
+      <module name="imooc-news-dev-service-article-html" options="-parameters" />
+      <module name="imooc-news-dev-service-files" options="-parameters" />
+      <module name="imooc-news-dev-service-user" options="-parameters" />
+      <module name="mybatis-generator-database" options="" />
+    </option>
+  </component>
+</project>
