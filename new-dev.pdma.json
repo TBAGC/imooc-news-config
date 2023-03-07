@@ -471,7 +471,7 @@
         }
       },
       "defKey": "t_admin_user",
-      "defName": "管理员",
+      "defName": "管理员表",
       "comment": "",
       "properties": {
         "partitioned by": "(date string)",
