@@ -16,6 +16,7 @@ import com.imooc.grace.result.ResponseStatusEnum;
 import com.imooc.pojo.Article;
 import com.imooc.pojo.Category;
 import com.imooc.pojo.bo.NewArticleBO;
+import com.imooc.pojo.eo.ArticleEO;
 import com.imooc.utils.DateUtil;
 import com.imooc.utils.PagedGridResult;
 import com.imooc.utils.extend.AliTextReviewUtils;
@@ -32,6 +33,9 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.IndexQuery;
+import org.springframework.data.elasticsearch.core.query.IndexQueryBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,10 +60,13 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
     @Autowired
     private AliTextReviewUtils aliTextReviewUtils;
 
+    @Autowired
+    private ElasticsearchTemplate esTemplate;
+
     @Transactional
     @Override
     public void createArticle(NewArticleBO newArticleBO, Category category) {
-
+        //使用雪花id
         String articleId = sid.nextShort();
 
         Article article = new Article();
@@ -67,10 +74,11 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
 
         article.setId(articleId);
         article.setCategoryId(category.getId());
+        //设置状态为1，审核中
         article.setArticleStatus(ArticleReviewStatus.REVIEWING.type);
         article.setCommentCounts(0);
         article.setReadCounts(0);
-
+        //判断是定时发布还是即时发布
         article.setIsDelete(YesOrNo.NO.type);
         article.setCreateTime(new Date());
         article.setUpdateTime(new Date());
@@ -123,11 +131,6 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         }
 
 
-
-
-        /**
-         * FIXME: 我们只检测正常的词汇，非正常词汇大家课后去检测
-         */
         // 通过阿里智能AI实现对文章文本的自动检测（自动审核）
 //        String reviewTextResult = aliTextReviewUtils.reviewTextContent(newArticleBO.getContent());
         String reviewTextResult = ArticleReviewLevel.REVIEW.type;
@@ -161,6 +164,20 @@ public class ArticleServiceImpl extends BaseService implements ArticleService {
         int res = articleMapper.updateByExampleSelective(pendingArticle, example);
         if (res != 1) {
             GraceException.display(ResponseStatusEnum.ARTICLE_REVIEW_ERROR);
+        }
+
+        //如果审核通过，则查询article，把相应的数据字段存入es中。
+        if(pendingStatus == ArticleReviewStatus.SUCCESS.type){
+            Article article = articleMapper.selectByPrimaryKey(articleId);
+            //如果是即时发布文章，审核通过后则可以直接存入es中
+            if(article.getIsAppoint() == ArticleAppointType.IMMEDIATELY.type){
+                ArticleEO articleEO = new ArticleEO();
+                BeanUtils.copyProperties(article, articleEO);
+                IndexQuery iq = new IndexQueryBuilder().withObject(articleEO).build();
+                esTemplate.index(iq);
+            }
+            //FIXME：如果为定时发布，那就要在消费者处添加相应的将数据存入es的逻辑
+
         }
     }
 
